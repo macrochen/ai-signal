@@ -24,7 +24,7 @@ jobs:
       - name: 配置推送邮箱
         run: |
           mkdir -p ~/.ai-signal
-          echo '{"delivery": {"method": "email", "email": "15064918@qq.com"}}' > ~/.ai-signal/config.json
+          echo '{"delivery": {"method": "email", "email": "macrochen.cn@gmail.com"}}' > ~/.ai-signal/config.json
 
       - name: 生成并发送简报
         env:
