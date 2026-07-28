@@ -19,9 +19,9 @@ jobs:
         with:
           python-version: '3.11'
           cache: 'pip'
-
       - name: 安装依赖
-        run: pip install -r scripts/requirements.txt
+        # 这里去掉了前面的 scripts/，因为文件在根目录
+        run: pip install -r requirements.txt
 
       - name: 配置推送邮箱
         run: |
