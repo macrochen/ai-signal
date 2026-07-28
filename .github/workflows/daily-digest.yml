@@ -26,13 +26,18 @@ jobs:
       - name: 配置推送邮箱
         run: |
           mkdir -p ~/.ai-signal
-          echo '{"delivery": {"method": "email", "email": "15064918@qq.com"}}' > ~/.ai-signal/config.json
+          echo '{"delivery": {"method": "email", "email": "macrochen.cn@gmail.com"}}' > ~/.ai-signal/config.json
 
       - name: 生成并发送简报
         env:
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
         run: |
           cd scripts
+          
+          # 强制把发件人替换为 Resend 官方要求的测试邮箱
+          sed -i 's/digest@resend.dev/onboarding@resend.dev/g' deliver.py
+
+          
           # 1. 抓取数据并轻量渲染出 Markdown 简报（不需要 LLM API）
           python prepare_digest.py | python render_digest.py > digest.md
           
