@@ -2,9 +2,7 @@ name: Daily Digest Push
 
 on:
   schedule:
-    # UTC 时间 0:00，对应北京时间每天早上 8:00
     - cron: '0 0 * * *'
-  # 允许你随时在 Actions 页面手动点击运行，方便测试
   workflow_dispatch:
 
 jobs:
@@ -19,27 +17,27 @@ jobs:
         with:
           python-version: '3.11'
           cache: 'pip'
+
       - name: 安装依赖
-        # 这里去掉了前面的 scripts/，因为文件在根目录
         run: pip install -r requirements.txt
 
       - name: 配置推送邮箱
         run: |
           mkdir -p ~/.ai-signal
-          echo '{"delivery": {"method": "email", "email": "macrochen.cn@gmail.com"}}' > ~/.ai-signal/config.json
+          echo '{"delivery": {"method": "email", "email": "15064918@qq.com"}}' > ~/.ai-signal/config.json
 
       - name: 生成并发送简报
         env:
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           cd scripts
           
-          # 强制把发件人替换为 Resend 官方要求的测试邮箱
+          # 修复邮件发件人限制
           sed -i 's/digest@resend.dev/onboarding@resend.dev/g' deliver.py
-
           
-          # 1. 抓取数据并轻量渲染出 Markdown 简报（不需要 LLM API）
-          python prepare_digest.py | python render_digest.py > digest.md
+          # 抓取数据并调用 Gemini 生成深度中文简报
+          python prepare_digest.py | python gemini_digest.py > digest.md
           
-          # 2. 将简报通过邮件发送给你
+          # 发送邮件
           python deliver.py --file digest.md
