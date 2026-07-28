@@ -29,15 +29,14 @@ jobs:
       - name: 生成并发送简报
         env:
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           cd scripts
           
           # 修复邮件发件人限制
           sed -i 's/digest@resend.dev/onboarding@resend.dev/g' deliver.py
           
-          # 抓取数据并调用 Gemini 生成深度中文简报
-          python prepare_digest.py | python gemini_digest.py > digest.md
+          # 抓取数据并轻量渲染出 Markdown 简报（不需要 LLM API）
+          python prepare_digest.py | python render_digest.py > digest.md
           
           # 发送邮件
           python deliver.py --file digest.md
